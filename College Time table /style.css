@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
 }
 
-/* LOGIN PAGE STYLES */
+/* LOGIN PAGE */
 .login-container {
     display: flex;
     justify-content: center;
@@ -83,7 +83,8 @@ body {
     font-weight: 600;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 12px;
     border: 2px solid #ddd;
@@ -92,7 +93,8 @@ body {
     transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: #667eea;
 }
@@ -128,7 +130,7 @@ body {
     font-weight: 600;
 }
 
-/* MAIN APP STYLES */
+/* MAIN APP */
 .app-container {
     display: none;
     max-width: 1400px;
@@ -186,6 +188,7 @@ body {
     background: #ee5a52;
 }
 
+/* CURRENT TIME */
 .current-time {
     background: white;
     padding: 15px 25px;
@@ -198,6 +201,7 @@ body {
     font-weight: 600;
 }
 
+/* ALERT BOX */
 .alert-box {
     background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
     color: white;
@@ -217,6 +221,64 @@ body {
     50% { transform: scale(1.02); }
 }
 
+/* BATCH SELECTION CARDS */
+.batch-selection-container {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.batch-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 20px;
+    color: #667eea;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.batch-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.selected-batch-title {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #333;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.secondary-btn {
+    padding: 12px 20px;
+    background: #f0f0f0;
+    color: #667eea;
+    font-weight: 700;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+/* TABS */
 .tabs {
     display: flex;
     gap: 10px;
@@ -244,6 +306,7 @@ body {
     color: white;
 }
 
+/* TAB CONTENT */
 .tab-content {
     display: none;
 }
@@ -252,6 +315,7 @@ body {
     display: block;
 }
 
+/* CARDS */
 .card {
     background: white;
     padding: 25px;
@@ -267,6 +331,7 @@ body {
     border-bottom: 3px solid #667eea;
 }
 
+/* CLASS ITEM */
 .class-item {
     background: #f8f9fa;
     padding: 20px;
@@ -305,6 +370,7 @@ body {
     font-size: 14px;
 }
 
+/* DAY BUTTONS */
 .day-buttons {
     display: flex;
     gap: 10px;
@@ -333,6 +399,7 @@ body {
     border-color: #667eea;
 }
 
+/* EMPTY STATE */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -340,6 +407,7 @@ body {
     font-size: 18px;
 }
 
+/* STATS GRID */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -367,6 +435,7 @@ body {
     opacity: 0.9;
 }
 
+/* CHART */
 .chart-container {
     height: 300px;
     display: flex;
@@ -409,6 +478,7 @@ body {
     color: #667eea;
 }
 
+/* MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -451,7 +521,8 @@ body {
     border: none;
 }
 
-.class-list-item {
+/* CLASS LIST ITEM */
+class-list-item {
     background: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
@@ -485,6 +556,7 @@ body {
     color: white;
 }
 
+/* NOTIFICATION */
 .notification {
     position: fixed;
     bottom: 20px;
@@ -514,94 +586,14 @@ body {
     }
 }
 
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .role-buttons {
         grid-template-columns: 1fr;
     }
-    
+
     .app-header {
         flex-direction: column;
         gap: 15px;
     }
-}
-
-
-/* =========================================================
-   BATCH SELECTION UI (Teacher + Admin)
-   BIG TILES (Option C)
-   ========================================================= */
-
-.batch-selection-container {
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.batch-card {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 20px;
-    color: #667eea;
-    cursor: pointer;
-    border: 2px solid #ddd;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.batch-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.batch-card.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-/* Selected batch title */
-.selected-batch-title {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    font-size: 22px;
-    font-weight: 800;
-    color: #333;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
-
-/* Warning when no batch selected */
-.no-batch-warning {
-    background: #fff3cd;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    color: #856404;
-    font-weight: 600;
-    margin-bottom: 20px;
-    border-left: 5px solid #ffc107;
-}
-/* Secondary Button (Change Batch Button) */
-.secondary-btn {
-    padding: 12px 20px;
-    background: #f0f0f0;
-    color: #667eea;
-    font-weight: 700;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    display: inline-block;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
-
-.secondary-btn:hover {
-    background: #e0e0e0;
-    transform: translateY(-2px);
 }
