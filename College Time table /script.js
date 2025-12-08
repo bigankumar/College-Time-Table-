@@ -1,36 +1,99 @@
-/* =====================================================
+/* ============================================================
    GLOBAL VARIABLES
-===================================================== */
+   ============================================================ */
+let userRole = null;
+let currentUser = null;
+
 let classes = [];
-let tasks = [];
-let currentFilter = "all";
+let tasks = [];  // Only admin uses this
+let notes = "";  // Only admin uses this
 
-/* =====================================================
-   LOGIN SCREEN HELPERS
-===================================================== */
-function show(id) {
-    document.querySelectorAll(".center-box").forEach(box => box.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
+const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+/* ============================================================
+   INITIAL SAMPLE DATA (LOADED ONLY 1 TIME)
+   ============================================================ */
+function loadSampleDataIfNeeded() {
+    if (!localStorage.getItem("sampleLoaded")) {
+        classes = [
+            {
+                id: 1,
+                name: "Data Structures",
+                day: "Monday",
+                start: "10:00",
+                end: "11:00",
+                teacher: "Dr. Smith",
+                room: "Lab 301",
+                type: "Lecture",
+                extra: false
+            },
+            {
+                id: 2,
+                name: "DBMS",
+                day: "Tuesday",
+                start: "11:00",
+                end: "12:00",
+                teacher: "Prof. Sharma",
+                room: "Room 204",
+                type: "Lecture",
+                extra: false
+            },
+            {
+                id: 3,
+                name: "Computer Networks",
+                day: "Wednesday",
+                start: "09:00",
+                end: "10:00",
+                teacher: "Dr. Rao",
+                room: "Room 110",
+                type: "Lecture",
+                extra: false
+            }
+        ];
+
+        localStorage.setItem("timetableClasses", JSON.stringify(classes));
+        localStorage.setItem("sampleLoaded", "true");
+    }
 }
 
-function hideLoginScreens() {
-    document.querySelectorAll(".center-box").forEach(box => box.classList.add("hidden"));
+/* ============================================================
+   LOCAL STORAGE LOAD/SAVE
+   ============================================================ */
+function loadData() {
+    const saved = localStorage.getItem("timetableClasses");
+    if (saved) classes = JSON.parse(saved);
 }
 
-/* =====================================================
-   STUDENT REGISTRATION + LOGIN
-===================================================== */
-function openStudentReg() { show("studentReg"); }
-function openStudentLogin() { show("studentLogin"); }
+function saveData() {
+    localStorage.setItem("timetableClasses", JSON.stringify(classes));
+}
 
+/* ============================================================
+   NAVIGATION BETWEEN LOGIN BOXES
+   ============================================================ */
+function hideAllLogin() {
+    document.querySelectorAll(".center-box").forEach(b => b.classList.add("hidden"));
+}
+
+function openStudentReg() { hideAllLogin(); document.getElementById("studentReg").classList.remove("hidden"); }
+function openStudentLogin() { hideAllLogin(); document.getElementById("studentLogin").classList.remove("hidden"); }
+
+function openTeacherReg() { hideAllLogin(); document.getElementById("teacherReg").classList.remove("hidden"); }
+function openTeacherLogin() { hideAllLogin(); document.getElementById("teacherLogin").classList.remove("hidden"); }
+
+function adminDirectLogin() { hideAllLogin(); document.getElementById("adminLogin").classList.remove("hidden"); }
+
+/* ============================================================
+   STUDENT REGISTER / LOGIN
+   ============================================================ */
 function registerStudent() {
     let name = stuName.value.trim();
     let email = stuEmail.value.trim();
+    if (!name || !email) return alert("Please fill all fields.");
 
-    if (!name || !email) return alert("Fill all fields");
     localStorage.setItem("student", JSON.stringify({ name, email }));
-    alert("Registration successful!");
-    show("studentLogin");
+    alert("Student registered successfully!");
+    openStudentLogin();
 }
 
 function studentLoginNow() {
@@ -38,24 +101,24 @@ function studentLoginNow() {
     let student = JSON.parse(localStorage.getItem("student") || "{}");
 
     if (student.email === email) {
-        loadApp("student", student.email);
-    } else alert("Invalid student login!");
+        currentUser = student;
+        loadApp("student");
+    } else {
+        alert("Student not registered.");
+    }
 }
 
-/* =====================================================
-   TEACHER REGISTRATION + LOGIN
-===================================================== */
-function openTeacherReg() { show("teacherReg"); }
-function openTeacherLogin() { show("teacherLogin"); }
-
+/* ============================================================
+   TEACHER REGISTER / LOGIN
+   ============================================================ */
 function registerTeacher() {
     let name = teachName.value.trim();
     let email = teachEmail.value.trim();
+    if (!name || !email) return alert("Please fill all fields.");
 
-    if (!name || !email) return alert("Fill all fields");
     localStorage.setItem("teacher", JSON.stringify({ name, email }));
-    alert("Teacher Registered!");
-    show("teacherLogin");
+    alert("Teacher registered successfully!");
+    openTeacherLogin();
 }
 
 function teacherLoginNow() {
@@ -63,581 +126,484 @@ function teacherLoginNow() {
     let teacher = JSON.parse(localStorage.getItem("teacher") || "{}");
 
     if (teacher.email === email) {
-        loadApp("teacher", teacher.email);
-    } else alert("Invalid teacher login!");
+        currentUser = teacher;
+        loadApp("teacher");
+    } else {
+        alert("Teacher not registered.");
+    }
 }
 
-/* =====================================================
+/* ============================================================
    ADMIN LOGIN
-===================================================== */
-function adminDirectLogin() { show("adminLogin"); }
-
+   ============================================================ */
 function adminLoginNow() {
     let email = adminEmail.value.trim();
     let pass = adminPass.value.trim();
 
     if (email === "admin@gmail.com" && pass === "admin123") {
-        loadApp("admin", email);
-    } else alert("Wrong admin credentials!");
+        currentUser = { email };
+        loadApp("admin");
+    } else {
+        alert("Incorrect admin credentials.");
+    }
 }
 
-/* =====================================================
-   LOAD DASHBOARD
-===================================================== */
-function loadApp(role, email) {
-    hideLoginScreens();
+/* ============================================================
+   LOAD APP AFTER LOGIN
+   ============================================================ */
+function loadApp(role) {
+    userRole = role;
+    loadSampleDataIfNeeded();
+    loadData();
+
+    hideAllLogin();
     document.getElementById("app").style.display = "block";
 
-    // Show email under time
-    document.getElementById("loggedUser").innerText = "Logged in as: " + email;
+    document.getElementById("loggedUser").innerText = currentUser.email;
 
-    localStorage.setItem("userRole", role);
+    updateClock();
+    setInterval(updateClock, 1000);
 
-    applyRoleRestrictions(role);
-    init();
+    if (role === "student") setupStudentView();
+    if (role === "teacher") setupTeacherView();
+    if (role === "admin") setupAdminView();
+
+    showNotification("Logged in as " + role.toUpperCase());
 }
 
-/* LOGOUT */
 function logout() {
-    localStorage.removeItem("userRole");
     location.reload();
 }
 
-/* =====================================================
-   APPLY ROLE-BASED VIEW
-===================================================== */
-function applyRoleRestrictions(role) {
-    const fullDashboard = document.getElementById("fullDashboard");
-    const studentStatsArea = document.getElementById("studentStatsArea");
-    const studentDisplayArea = document.getElementById("studentDisplayArea");
-    const tabsArea = document.getElementById("tabsArea");
-    const addClassCard = document.getElementById("addClassCard");
-    const adminButtons = document.getElementById("adminButtons");
-    const adminTeacherStats = document.getElementById("adminTeacherStats");
+/* ============================================================
+   CLOCK
+   ============================================================ */
+function updateClock() {
+    let now = new Date();
+    document.getElementById("currentTime").innerText =
+        now.toLocaleString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+}
 
-    if (role === "student") {
-        fullDashboard.style.display = "none";
+/* ============================================================
+   STUDENT VIEW SETUP
+   ============================================================ */
+function setupStudentView() {
+    document.getElementById("studentTabs").classList.remove("hidden");
+    document.getElementById("studentView").classList.remove("hidden");
 
-        studentStatsArea.style.display = "grid";
-        studentDisplayArea.style.display = "block";
+    showStudentToday();
+}
 
-        tabsArea.style.display = "none";
-        adminButtons.style.display = "none";
-        addClassCard.style.display = "none";
-        adminTeacherStats.style.display = "none";
+/* ============================================================
+   STUDENT TODAY CLASSES
+   ============================================================ */
+function showStudentToday() {
+    switchTabs("studentTabs", 0);
 
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+    let todayClasses = classes
+        .filter(c => c.day === today)
+        .sort((a, b) => a.start.localeCompare(b.start));
+
+    studentTodayArea.classList.remove("hidden");
+    studentWeekArea.classList.add("hidden");
+
+    if (todayClasses.length === 0) {
+        studentTodayList.innerHTML = `<p>No classes today.</p>`;
+    } else {
+        studentTodayList.innerHTML = todayClasses.map(renderClass).join("");
+    }
+}
+
+/* ============================================================
+   STUDENT WEEK SECTION
+   ============================================================ */
+function showStudentWeek() {
+    switchTabs("studentTabs", 1);
+
+    studentTodayArea.classList.add("hidden");
+    studentWeekArea.classList.remove("hidden");
+
+    renderWeekButtons("weekDaysButtons", "selectedDayArea", "selectedDayTitle", "selectedDayContent");
+}
+
+/* ============================================================
+   RENDER WEEK BUTTONS
+   ============================================================ */
+function renderWeekButtons(containerID, areaID, titleID, contentID) {
+    let container = document.getElementById(containerID);
+    container.innerHTML = "";
+
+    weekDays.forEach(day => {
+        let count = classes.filter(c => c.day === day).length;
+
+        let btn = `
+            <button class="week-btn" onclick="loadWeekDay('${day}','${areaID}','${titleID}','${contentID}')">
+                <strong>${day}</strong> (${count})
+            </button>
+        `;
+
+        container.innerHTML += btn;
+    });
+}
+
+/* ============================================================
+   SELECT A DAY IN WEEK
+   ============================================================ */
+function loadWeekDay(day, areaID, titleID, contentID) {
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+    let area = document.getElementById(areaID);
+    let title = document.getElementById(titleID);
+    let content = document.getElementById(contentID);
+
+    title.innerText = day;
+    area.classList.remove("hidden");
+
+    if (weekDays.indexOf(day) < weekDays.indexOf(today)) {
+        content.innerHTML = `<p>All ${day} classes are over. Wait for next week.</p>`;
         return;
     }
 
-    if (role === "teacher") {
-        addClassCard.style.display = "none";
-        adminButtons.style.display = "none";
+    if (day === today) {
+        content.innerHTML = classes.filter(c => c.day === day).map(renderClass).join("");
+        return;
     }
 
-    if (role === "admin") {
-        addClassCard.style.display = "block";
-        adminButtons.style.display = "flex";
+    let list = classes.filter(c => c.day === day);
+
+    if (list.length === 0) {
+        content.innerHTML = `<p>No classes scheduled on this day.</p>`;
+        return;
     }
+
+    content.innerHTML = list.map(renderClass).join("");
 }
 
-/* =====================================================
-   SAMPLE DATA LOAD (FIRST TIME)
-===================================================== */
-if (!localStorage.getItem("sampleDataLoaded")) {
+/* ============================================================
+   TEACHER VIEW SETUP
+   ============================================================ */
+function setupTeacherView() {
+    document.getElementById("teacherTabs").classList.remove("hidden");
+    document.getElementById("teacherView").classList.remove("hidden");
 
-    // Default sample classes
-    classes = [
-        {
-            id: 1,
-            name: "Data Structures",
-            day: "Monday",
-            startTime: "10:00",
-            endTime: "11:00",
-            teacher: "Dr. Smith",
-            room: "Lab 301",
-            type: "Lecture"
-        },
-        {
-            id: 2,
-            name: "DBMS",
-            day: "Tuesday",
-            startTime: "11:00",
-            endTime: "12:00",
-            teacher: "Prof. Sharma",
-            room: "Room 204",
-            type: "Lecture"
-        },
-        {
-            id: 3,
-            name: "Computer Networks",
-            day: "Wednesday",
-            startTime: "09:00",
-            endTime: "10:00",
-            teacher: "Dr. Rao",
-            room: "Room 110",
-            type: "Lecture"
+    renderExtraClassDayOptions();
+    showTeacherToday();
+}
+
+/* ============================================================
+   TEACHER TODAY
+   ============================================================ */
+function showTeacherToday() {
+    switchTabs("teacherTabs", 0);
+
+    teacherTodayArea.classList.remove("hidden");
+    teacherWeekArea.classList.add("hidden");
+    extraClassArea.classList.add("hidden");
+
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+    let todayClasses = classes.filter(c => c.day === today);
+    teacherTodayList.innerHTML = todayClasses.length
+        ? todayClasses.map(renderClass).join("")
+        : "<p>No classes today.</p>";
+}
+
+/* ============================================================
+   TEACHER WEEK
+   ============================================================ */
+function showTeacherWeek() {
+    switchTabs("teacherTabs", 1);
+
+    teacherTodayArea.classList.add("hidden");
+    teacherWeekArea.classList.remove("hidden");
+    extraClassArea.classList.add("hidden");
+
+    renderWeekButtons(
+        "teacherWeekButtons",
+        "teacherSelectedDayArea",
+        "teacherSelectedDayTitle",
+        "teacherSelectedDayContent"
+    );
+}
+
+/* ============================================================
+   TEACHER EXTRA CLASS
+   ============================================================ */
+function openExtraClass() {
+    switchTabs("teacherTabs", 2);
+
+    teacherTodayArea.classList.add("hidden");
+    teacherWeekArea.classList.add("hidden");
+    extraClassArea.classList.remove("hidden");
+}
+
+function renderExtraClassDayOptions() {
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+    extraClassDay.innerHTML = "";
+
+    weekDays.forEach(day => {
+        if (weekDays.indexOf(day) > weekDays.indexOf(today)) {
+            extraClassDay.innerHTML += `<option>${day}</option>`;
         }
-    ];
-
-    // Sample tasks
-    tasks = [
-        {
-            id: 1,
-            title: "DS Assignment",
-            subject: "Data Structures",
-            date: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-            priority: "High",
-            completed: false
-        },
-        {
-            id: 2,
-            title: "CN Notes",
-            subject: "Computer Networks",
-            date: new Date().toISOString().split("T")[0],
-            priority: "Medium",
-            completed: false
-        }
-    ];
-
-    localStorage.setItem("timetableClasses", JSON.stringify(classes));
-    localStorage.setItem("timetableTasks", JSON.stringify(tasks));
-    localStorage.setItem("sampleDataLoaded", "true");
-}
-
-/* =====================================================
-   LOAD DATA
-===================================================== */
-function loadData() {
-    const savedClasses = localStorage.getItem("timetableClasses");
-    const savedTasks = localStorage.getItem("timetableTasks");
-
-    if (savedClasses) classes = JSON.parse(savedClasses);
-    if (savedTasks) tasks = JSON.parse(savedTasks);
-}
-
-/* SAVE DATA */
-function saveData() {
-    localStorage.setItem("timetableClasses", JSON.stringify(classes));
-    localStorage.setItem("timetableTasks", JSON.stringify(tasks));
-}
-
-/* =====================================================
-   INIT DASHBOARD
-===================================================== */
-function init() {
-    loadData();
-    updateCurrentTime();
-
-    setInterval(updateCurrentTime, 1000);
-    setInterval(checkUpcomingClasses, 30000);
-
-    updateStats();
-    renderCalendar();
-    renderAnalytics();
-    displayClasses();
-    displayTasks();
-    loadNotes();
-
-    checkRoleRestrictions();
-}
-
-/* =====================================================
-   STUDENT SPECIFIC UI
-===================================================== */
-function checkRoleRestrictions() {
-    const role = localStorage.getItem("userRole");
-
-    if (role === "student") {
-        showTodayClasses(); // Default view
-    }
-}
-
-/* === Show Today Classes === */
-function showTodayClasses() {
-    const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-
-    const todayClasses = classes.filter(c => c.day === today);
-
-    document.getElementById("studentDisplayTitle").innerText = "Today's Classes";
-    document.getElementById("studentDisplayContent").innerHTML =
-        todayClasses.length === 0
-            ? `<p>No classes today.</p>`
-            : todayClasses.map(c => `
-                <div class="class-item today">
-                    <div class="class-time">${c.startTime} - ${c.endTime}</div>
-                    <div class="class-name">${c.name}</div>
-                    <div class="class-details">${c.teacher} | ${c.room}</div>
-                </div>
-            `).join("");
-
-    document.getElementById("todayClasses").innerText = todayClasses.length;
-}
-
-/* === Show Weekly Summary (Fixed Week Mon–Fri) === */
-function showWeeklySummary() {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-
-    let output = `
-        <table class="week-table">
-            <tr>
-                <th>Day</th>
-                <th>Classes</th>
-            </tr>
-    `;
-
-    let total = 0;
-
-    days.forEach(day => {
-        let count = classes.filter(c => c.day === day).length;
-        total += count;
-
-        output += `
-            <tr>
-                <td>${day}</td>
-                <td>${count}</td>
-            </tr>
-        `;
     });
-
-    output += "</table>";
-
-    document.getElementById("studentDisplayTitle").innerText = "Weekly Class Summary";
-    document.getElementById("studentDisplayContent").innerHTML = output;
-
-    document.getElementById("weeklySummaryCount").innerText = total;
 }
 
-/* =====================================================
-   CLOCK
-===================================================== */
-function updateCurrentTime() {
-    const now = new Date();
+function saveExtraClass() {
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 
-    const options = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
+    let day = extraClassDay.value;
+    if (!day || weekDays.indexOf(day) <= weekDays.indexOf(today)) {
+        alert("Extra classes can only be added to future days.");
+        return;
+    }
+
+    let newClass = {
+        id: Date.now(),
+        name: extraClassName.value,
+        day,
+        start: extraStartTime.value,
+        end: extraEndTime.value,
+        teacher: currentUser.name,
+        room: extraRoom.value,
+        type: extraType.value,
+        extra: true
     };
 
-    document.getElementById("currentTime").innerText =
-        now.toLocaleDateString("en-US", options);
-}
-
-/* =====================================================
-   TABS (ADMIN + TEACHER ONLY)
-===================================================== */
-function switchTab(tabName) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
-    event.target.classList.add("active");
-    document.getElementById(tabName + "Tab").classList.add("active");
-
-    if (tabName === "calendar") renderCalendar();
-    if (tabName === "analytics") renderAnalytics();
-}
-
-/* =====================================================
-   CLASS MANAGEMENT
-===================================================== */
-function addClass(data) {
-    const role = localStorage.getItem("userRole");
-    if (role !== "admin") return alert("Only admin can add classes!");
-
-    classes.push({ id: Date.now(), ...data });
-
+    classes.push(newClass);
     saveData();
-    displayClasses();
-    updateStats();
-    renderCalendar();
-    renderAnalytics();
+    showNotification("Extra class added.");
+
+    extraClassName.value = "";
+    extraStartTime.value = "";
+    extraEndTime.value = "";
+    extraRoom.value = "";
+}
+
+/* ============================================================
+   ADMIN VIEW
+   ============================================================ */
+function setupAdminView() {
+    document.getElementById("adminTabs").classList.remove("hidden");
+    showAdminDashboard();
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+function showAdminDashboard() {
+    switchTabs("adminTabs", 0);
+
+    adminDashboard.classList.remove("hidden");
+    adminData.classList.add("hidden");
+
+    renderAdminCharts();
+}
+
+function renderAdminCharts() {
+    /* Classes per day */
+    let chartHTML = weekDays.map(day => {
+        let count = classes.filter(c => c.day === day).length;
+        return `<p><strong>${day}</strong>: ${count}</p>`;
+    }).join("");
+
+    adminClassesChart.innerHTML = chartHTML;
+
+    /* Class type distribution */
+    let types = {};
+    classes.forEach(c => { types[c.type] = (types[c.type] || 0) + 1; });
+
+    adminTypeChart.innerHTML = Object.entries(types).map(
+        ([type, count]) => `<p>${type}: ${count}</p>`
+    ).join("");
+
+    /* Upcoming class */
+    let today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+    let upcoming = classes.filter(c => c.day === today).sort((a, b) => a.start.localeCompare(b.start))[0];
+
+    adminUpcoming.innerHTML = upcoming
+        ? `<p>${upcoming.name} at ${upcoming.start}</p>`
+        : `<p>No upcoming classes today.</p>`;
+}
+
+/* ============================================================
+   ADMIN DATA PAGE
+   ============================================================ */
+function showAdminData() {
+    switchTabs("adminTabs", 1);
+
+    adminDashboard.classList.add("hidden");
+    adminData.classList.remove("hidden");
+}
+
+/* ============================================================
+   MODIFY CLASSES POPUP
+   ============================================================ */
+function openModifyClasses() {
+    modifyPopup.classList.remove("hidden");
+
+    modifyList.innerHTML = classes.map(c => `
+        <div class="modify-item">
+            <strong>${c.name}</strong> — ${c.day} (${c.start}-${c.end})
+            <div class="modify-actions">
+                <button class="m3-btn small secondary" onclick="editClass(${c.id})">Edit</button>
+                <button class="m3-btn small danger" onclick="deleteClass(${c.id})">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function closeModifyClasses() {
+    modifyPopup.classList.add("hidden");
+}
+
+/* ============================================================
+   ADD CLASS POPUP
+   ============================================================ */
+function openAddClassModal() {
+    addClassPopup.classList.remove("hidden");
+}
+
+function closeAddClassModal() {
+    addClassPopup.classList.add("hidden");
+}
+
+function saveNewClass() {
+    let newClass = {
+        id: Date.now(),
+        name: newClassName.value,
+        day: newClassDay.value,
+        start: newStart.value,
+        end: newEnd.value,
+        teacher: newTeacher.value,
+        room: newRoom.value,
+        type: newType.value,
+        extra: false
+    };
+
+    classes.push(newClass);
+    saveData();
+    closeAddClassModal();
+    openModifyClasses();
+    showNotification("Class added successfully.");
+}
+
+/* ============================================================
+   EDIT / DELETE CLASS
+   ============================================================ */
+function editClass(id) {
+    let c = classes.find(x => x.id === id);
+
+    newClassName.value = c.name;
+    newClassDay.value = c.day;
+    newStart.value = c.start;
+    newEnd.value = c.end;
+    newTeacher.value = c.teacher;
+    newRoom.value = c.room;
+    newType.value = c.type;
+
+    deleteClass(id);
+    addClassPopup.classList.remove("hidden");
 }
 
 function deleteClass(id) {
-    const role = localStorage.getItem("userRole");
-    if (role !== "admin") return alert("Only admin can delete!");
-
     classes = classes.filter(c => c.id !== id);
     saveData();
-    displayClasses();
-    updateStats();
+    openModifyClasses();
+    showNotification("Class removed.");
 }
 
-function editClass(id) {
-    const role = localStorage.getItem("userRole");
-    if (role !== "admin") return alert("Only admin can edit!");
-
-    const cls = classes.find(c => c.id === id);
-
-    className.value = cls.name;
-    classDay.value = cls.day;
-    startTime.value = cls.startTime;
-    endTime.value = cls.endTime;
-    teacherName.value = cls.teacher || "";
-    roomNumber.value = cls.room || "";
-    classType.value = cls.type;
-
-    deleteClass(id);
-}
-
-/* DISPLAY CLASSES */
-function displayClasses() {
-    const role = localStorage.getItem("userRole");
-    const container = document.getElementById("classList");
-
-    let filtered =
-        currentFilter === "all"
-            ? classes
-            : classes.filter(c => c.day === currentFilter);
-
-    filtered.sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-    container.innerHTML =
-        filtered.length === 0
-            ? `<p>No classes.</p>`
-            : filtered.map(c => `
-                <div class="class-item">
-                    <div class="class-actions">
-                        ${role === "admin" ?
-                        `<button class="btn-small btn-edit" onclick="editClass(${c.id})">Edit</button>
-                         <button class="btn-small btn-delete" onclick="deleteClass(${c.id})">Delete</button>`
-                        : ``}
-                    </div>
-                    <div class="class-time">${c.startTime} - ${c.endTime}</div>
-                    <div class="class-name">${c.name}</div>
-                    <div class="class-details">${c.teacher} | ${c.room}</div>
-                </div>
-            `).join("");
-}
-
-function filterClasses(day) {
-    currentFilter = day;
-    displayClasses();
-}
-
-/* =====================================================
-   UPCOMING CLASS ALERT
-===================================================== */
-function checkUpcomingClasses() {
-    const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-    const now = new Date();
-
-    const upcoming = classes.find(c => {
-        if (c.day !== today) return false;
-
-        const [h, m] = c.startTime.split(":");
-        const classTime = new Date();
-        classTime.setHours(h, m, 0);
-
-        const diff = classTime - now;
-        return diff > 0 && diff <= 15 * 60 * 1000;
-    });
-
-    if (upcoming) {
-        alertBox.classList.add("show");
-        alertMessage.innerText = `${upcoming.name} starts at ${upcoming.startTime}`;
-    } else {
-        alertBox.classList.remove("show");
-    }
-}
-
-/* =====================================================
-   STATS
-===================================================== */
-function updateStats() {
-    const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-
-    document.getElementById("totalClasses").innerText = classes.length;
-
-    const todayCount = classes.filter(c => c.day === today).length;
-    document.getElementById("todayClasses").innerText = todayCount;
-
-    const next = classes.filter(c => c.day === today).sort((a, b) =>
-        a.startTime.localeCompare(b.startTime)
-    )[0];
-
-    document.getElementById("nextClass").innerText = next ? next.startTime : "--";
-
-    const totalHours = classes.reduce((sum, c) => {
-        const [sh, sm] = c.startTime.split(":").map(Number);
-        const [eh, em] = c.endTime.split(":").map(Number);
-        return sum + ((eh * 60 + em) - (sh * 60 + sm)) / 60;
-    }, 0);
-
-    document.getElementById("weeklyHours").innerText = totalHours.toFixed(1);
-
-    document.getElementById("completedTasks").innerText =
-        tasks.filter(t => t.completed).length;
-}
-
-/* =====================================================
-   CALENDAR
-===================================================== */
-function renderCalendar() {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    calendarGrid.innerHTML = days.map(day => {
-        const count = classes.filter(c => c.day === day).length;
-        return `
-            <div class="calendar-day">
-                <div class="calendar-day-name">${day}</div>
-                <div class="calendar-class-count">${count}</div>
-            </div>
-        `;
-    }).join("");
-}
-
-/* =====================================================
-   ANALYTICS
-===================================================== */
-function renderAnalytics() {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const counts = days.map(d => classes.filter(c => c.day === d).length);
-    const max = Math.max(...counts, 1);
-
-    barChart.innerHTML = counts.map((count, i) => `
-        <div class="bar" style="height:${(count / max) * 100}%;">
-            <div class="bar-value">${count}</div>
-            <div class="bar-label">${days[i].slice(0,3)}</div>
-        </div>
-    `).join("");
-
-    const types = {};
-    classes.forEach(c => types[c.type] = (types[c.type] || 0) + 1);
-
-    studyStats.innerHTML = Object.entries(types)
-        .map(([type, count]) => `<p>${type}: ${count}</p>`)
-        .join("");
-}
-
-/* =====================================================
-   TASKS
-===================================================== */
-function addTask(data) {
-    tasks.push({ id: Date.now(), completed: false, ...data });
-    saveData();
-    displayTasks();
-    updateStats();
-}
-
-function toggleTask(id) {
-    let t = tasks.find(t => t.id === id);
-    t.completed = !t.completed;
-    saveData();
-    displayTasks();
-}
-
-function deleteTask(id) {
-    tasks = tasks.filter(t => t.id !== id);
-    saveData();
-    displayTasks();
-}
-
-function displayTasks() {
-    tasksList.innerHTML =
-        tasks.length === 0
-            ? `<p>No tasks.</p>`
-            : tasks.map(t => `
-                <div class="task-item ${t.completed ? "completed" : ""}">
-                    <input type="checkbox" ${t.completed ? "checked" : ""} onclick="toggleTask(${t.id})">
-                    <div style="flex:1;">
-                        <b>${t.title}</b><br>
-                        <small>${t.subject} | Due: ${t.date}</small>
-                    </div>
-                    <button class="btn-small btn-delete" onclick="deleteTask(${t.id})">Delete</button>
-                </div>
-            `).join("");
-}
-
-/* =====================================================
-   NOTES
-===================================================== */
-function saveNotes() {
-    localStorage.setItem("timetableNotes", notesArea.value);
-}
-
-function loadNotes() {
-    notesArea.value = localStorage.getItem("timetableNotes") || "";
-}
-
-/* =====================================================
-   EXPORT / IMPORT
-===================================================== */
+/* ============================================================
+   EXPORT / IMPORT / RESET
+   ============================================================ */
 function exportData() {
-    const data = { classes, tasks, notes: notesArea.value };
+    let data = {
+        classes,
+        tasks,
+        notes
+    };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
+    let blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    
+    let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "timetable_backup.json";
     a.click();
 }
 
 function importData() {
-    const input = document.createElement("input");
+    let input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
 
     input.onchange = e => {
-        const reader = new FileReader();
-        reader.onload = evt => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+
+        reader.onload = event => {
             try {
-                const data = JSON.parse(evt.target.result);
+                let data = JSON.parse(event.target.result);
                 classes = data.classes || [];
                 tasks = data.tasks || [];
-                notesArea.value = data.notes || "";
+                notes = data.notes || "";
+
                 saveData();
-                init();
+                showNotification("Data imported.");
+                showAdminDashboard();
             } catch {
-                alert("Invalid file!");
+                alert("Invalid file.");
             }
         };
-        reader.readAsText(e.target.files[0]);
+
+        reader.readAsText(file);
     };
 
     input.click();
 }
 
-/* =====================================================
-   CLEAR EVERYTHING
-===================================================== */
 function clearAllData() {
-    if (confirm("Delete ALL data? This cannot be undone!")) {
-        localStorage.clear();
-        location.reload();
-    }
+    if (!confirm("Delete ALL data?")) return;
+
+    localStorage.clear();
+    location.reload();
 }
 
-/* =====================================================
-   FORM HANDLERS
-===================================================== */
-document.getElementById("classForm").addEventListener("submit", e => {
-    e.preventDefault();
-    addClass({
-        name: className.value,
-        day: classDay.value,
-        startTime: startTime.value,
-        endTime: endTime.value,
-        teacher: teacherName.value,
-        room: roomNumber.value,
-        type: classType.value
-    });
-    e.target.reset();
-});
+/* ============================================================
+   NOTIFICATION POPUP
+   ============================================================ */
+function showNotification(msg) {
+    notification.innerText = msg;
+    notification.classList.add("show");
+    setTimeout(() => notification.classList.remove("show"), 2500);
+}
 
-document.getElementById("taskForm").addEventListener("submit", e => {
-    e.preventDefault();
-    addTask({
-        title: taskTitle.value,
-        subject: taskSubject.value,
-        date: taskDate.value,
-        priority: taskPriority.value
-    });
-    e.target.reset();
-});
+/* ============================================================
+   CLASS RENDERING TEMPLATE
+   ============================================================ */
+function renderClass(c) {
+    return `
+        <div class="class-item">
+            <div class="class-title">${c.name}</div>
+            <div class="class-time">${c.start} – ${c.end}</div>
+            <div class="class-meta">${c.room ? "Room: " + c.room : ""} | ${c.type}</div>
+        </div>
+    `;
+}
 
-
-    
+/* ============================================================
+   TAB SWITCH LOGIC
+   ============================================================ */
+function switchTabs(tabContainerId, index) {
+    let tabs = document.querySelectorAll(`#${tabContainerId} .tab`);
+    tabs.forEach(t => t.classList.remove("active"));
+    tabs[index].classList.add("active");
+}

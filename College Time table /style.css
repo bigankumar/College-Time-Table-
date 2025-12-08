@@ -1,547 +1,352 @@
-/* RESET + GLOBAL */
+/* ===========================================================
+   GLOBAL MATERIAL 3 BASE
+   =========================================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
 }
 
 body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: #eef1f7;
-    min-height: 100vh;
+    background: #f7f8fa;
+    color: #222;
+    padding-bottom: 60px;
 }
-
-/* ============================
-   LOGIN CARD
-============================ */
-.center-box {
-    max-width: 400px;
-    margin: 80px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.15);
-    text-align: center;
-    animation: fadeIn 0.4s;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: 0;
-    background: #667eea;
-    color: #fff;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.btn:hover { background: #5568d3; }
 
 .hidden { display: none; }
 
-.input {
+.small {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.title {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #1a237e;
+}
+
+/* ===========================================================
+   MATERIAL 3 CARD
+   =========================================================== */
+.m3-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
+    margin: 15px auto;
+    width: min(850px, 95%);
+}
+
+.center-box {
+    margin-top: 100px;
+    width: min(360px, 90%);
+}
+
+/* ===========================================================
+   MATERIAL 3 BUTTONS
+   =========================================================== */
+.m3-btn {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    margin-top: 10px;
+    padding: 14px;
+    background: #4e73df;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
     font-size: 15px;
+    font-weight: 600;
+    margin-top: 12px;
+    transition: 0.2s;
 }
 
-/* ============================
-   HEADER
-============================ */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+.m3-btn:hover {
+    background: #4163c7;
 }
 
-.header-left h1 {
-    font-size: 26px;
-    font-weight: 700;
+.m3-btn.secondary {
+    background: #e0e0e0;
     color: #333;
 }
 
-.current-time {
-    font-size: 14px;
-    margin-top: 5px;
-    color: #666;
+.m3-btn.secondary:hover {
+    background: #d5d5d5;
 }
 
-.btn-header {
+.m3-btn.small {
+    width: auto;
     padding: 10px 18px;
     font-size: 14px;
-    border: none;
-    background: #667eea;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-left: 8px;
-    transition: 0.3s ease;
-}
-.btn-header:hover {
-    background: #5568d3;
 }
 
-/* ============================
-   STATS GRID
-============================ */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 15px;
-    padding: 0 20px;
-    margin-bottom: 20px;
+.m3-btn.danger {
+    background: #d9534f;
 }
 
-.stat-card {
-    background: white;
-    padding: 20px;
+.m3-btn.danger:hover {
+    background: #c0392b;
+}
+
+/* ===========================================================
+   MATERIAL 3 INPUTS
+   =========================================================== */
+.m3-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #dcdcdc;
     border-radius: 12px;
+    font-size: 15px;
+    margin-top: 12px;
+    transition: border 0.2s;
+}
+
+.m3-input:focus {
+    border-color: #4e73df;
+    outline: none;
+}
+
+/* ===========================================================
+   HEADER
+   =========================================================== */
+.m3-header {
+    background: white;
+    padding: 18px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e8e8e8;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.app-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+.subtext {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logged-user {
+    font-size: 14px;
+    padding: 6px 14px;
+    background: #eef2ff;
+    color: #1a237e;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.logout-btn {
+    padding: 10px 18px;
+    background: #d9534f;
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+/* ===========================================================
+   TABS (TOP)
+   =========================================================== */
+.m3-tabs {
+    width: min(850px, 95%);
+    margin: 20px auto 0 auto;
+    display: flex;
+    gap: 8px;
+}
+
+.tab {
+    flex: 1;
+    background: #eceff7;
+    border: none;
+    padding: 14px 0;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    cursor: default;
-}
-
-.student-click {
-    cursor: pointer !important;
-    transition: 0.3s ease;
-}
-.student-click:hover {
-    transform: translateY(-4px);
-}
-
-.stat-number {
-    font-size: 28px;
-    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
     color: #444;
 }
 
-.stat-label {
-    margin-top: 5px;
-    font-size: 14px;
-    color: #777;
+.tab.active {
+    background: #4e73df;
+    color: white;
 }
 
-/* ============================
-   CARD (COMMON BOX)
-============================ */
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+/* ===========================================================
+   WEEK BUTTONS
+   =========================================================== */
+.week-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
-.main-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 20px;
-}
-
-/* Scroll area */
-.scroll-box {
-    max-height: 550px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-/* ============================
-   WEEKLY SCHEDULE ITEMS
-============================ */
-.class-item {
-    background: #f9f9f9;
-    padding: 15px;
+.week-btn {
+    background: #f1f4ff;
+    padding: 10px 16px;
     border-radius: 10px;
-    margin-bottom: 12px;
-    border-left: 5px solid #667eea;
-    animation: fadeIn 0.3s;
+    border: 1px solid #d7dcf6;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.class-item.today {
-    background: #eef0ff;
-    border-left: 6px solid #4c57d0;
+.week-btn:hover {
+    background: #e1e7ff;
+}
+
+.week-btn strong {
+    color: #1a237e;
+}
+
+/* Selected Day Card */
+.selected-day-card {
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 12px;
+    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.05);
+}
+
+/* ===========================================================
+   CLASS ITEM BLOCK
+   =========================================================== */
+.class-item {
+    padding: 16px;
+    background: #f8f9ff;
+    border-radius: 10px;
+    border-left: 5px solid #4e73df;
+    margin-bottom: 14px;
+}
+
+.class-title {
+    font-size: 17px;
+    font-weight: 600;
 }
 
 .class-time {
     font-size: 14px;
-    font-weight: bold;
-    color: #333;
+    color: #555;
+    margin: 4px 0;
 }
 
-.class-name {
-    margin: 5px 0;
-    font-weight: 600;
-}
-
-.class-details {
+.class-meta {
     font-size: 13px;
-    color: #666;
+    opacity: 0.8;
 }
 
-.class-actions {
-    float: right;
-    margin-top: -5px;
+/* ===========================================================
+   ADMIN DASHBOARD
+   =========================================================== */
+.dashboard-top {
+    width: min(850px, 95%);
+    margin: 25px auto 10px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.btn-small {
-    padding: 6px 12px;
-    border: none;
-    background: #667eea;
-    color: white;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
+.admin-grid {
+    width: min(850px, 95%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
 }
-.btn-delete { background: #e84a4a !important; }
-.btn-edit   { background: #4caf50 !important; }
-/* ============================
-   TABS
-============================ */
-.tabs {
+
+@media(min-width: 900px) {
+    .admin-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ===========================================================
+   POPUP
+   =========================================================== */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.popup-content {
+    width: min(400px, 90%);
+}
+
+/* Modify List */
+.modify-item {
+    padding: 14px;
+    background: #f9fbff;
+    border-radius: 10px;
+    border-left: 4px solid #4e73df;
+    margin-bottom: 12px;
+}
+
+.modify-actions {
+    margin-top: 10px;
     display: flex;
     gap: 10px;
-    margin: 20px 20px 10px 20px;
 }
 
-.tab {
-    padding: 10px 18px;
-    background: #ddd;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    color: #444;
-    transition: 0.25s;
-}
-.tab:hover {
-    background: #cfcfcf;
-}
-.tab.active {
-    background: #667eea;
-    color: white;
-}
-
-.tab-content {
-    display: none;
-    padding: 20px;
-}
-.tab-content.active {
-    display: block;
-}
-
-/* ============================
-   CALENDAR GRID
-============================ */
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    padding-top: 10px;
-}
-
-.calendar-day {
-    background: #f8f8ff;
-    border: 1px solid #d6d6ff;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.calendar-day-name {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
-}
-
-.calendar-class-count {
-    font-size: 22px;
-    font-weight: 700;
-    color: #5568d3;
-}
-
-/* ============================
-   ANALYTICS
-============================ */
-.chart-container {
-    width: 100%;
-    height: 260px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-top: 20px;
-}
-
-.bar-chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 18px;
-    height: 100%;
-}
-
-.bar {
-    width: 35px;
-    background: #667eea;
-    border-radius: 6px 6px 0 0;
-    position: relative;
-}
-
-.bar-value {
-    position: absolute;
-    top: -24px;
-    width: 100%;
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
-    color: #444;
-}
-
-.bar-label {
-    position: absolute;
-    bottom: -23px;
-    width: 100%;
-    text-align: center;
-    font-size: 13px;
-    color: #555;
-}
-
-/* ============================
-   TASKS
-============================ */
-.task-item {
-    background: #f4f4ff;
-    border-left: 5px solid #667eea;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.task-item.completed {
-    opacity: 0.6;
-    text-decoration: line-through;
-}
-
-#tasksList input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-}
-
-/* ============================
-   NOTES
-============================ */
-#notesArea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
-}
-
-/* ============================
-   ALERT BOX
-============================ */
-.alert-box {
-    background: #fff7d1;
-    padding: 15px;
-    border-left: 5px solid #e2c000;
-    margin: 20px;
-    border-radius: 10px;
-    display: none;
-    animation: fadeIn 0.4s;
-}
-.alert-box.show {
-    display: block;
-}
-
-/* ============================
-   NOTIFICATION POPUP
-============================ */
+/* ===========================================================
+   NOTIFICATION
+   =========================================================== */
 .notification {
     position: fixed;
-    bottom: 30px;
-    right: -300px;
-    background: #333;
-    color: white;
-    padding: 14px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: 0.4s ease-out;
-}
-.notification.show {
-    right: 30px;
-}
-
-/* ============================
-   FORM
-============================ */
-form label {
-    font-size: 14px;
-    color: #333;
-}
-
-form input,
-form select {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    margin: 8px 0 12px;
-    font-size: 15px;
-}
-
-form button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    background: #667eea;
+    bottom: 25px;
+    right: 25px;
+    background: #4e73df;
+    padding: 15px 25px;
+    border-radius: 12px;
     color: white;
     font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-form button[type="submit"]:hover {
-    background: #5568d3;
+    display: none;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
 }
 
-/* ============================
-   STUDENT UI OVERRIDES
-============================ */
-
-.student-only-hide {
-    display: none !important;
+.notification.show {
+    display: block;
+    animation: slideIn 0.25s ease-out;
 }
 
-#studentStatsArea {
-    margin-top: 10px;
-}
-
-#studentDisplayArea {
-    margin: 20px;
-}
-
-#studentDisplayArea h2 {
-    margin-bottom: 15px;
-}
-
-.student-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.student-table th,
-.student-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-    font-size: 14px;
-}
-
-.student-table th {
-    background: #667eea;
-    color: white;
-}
-
-.student-table tr:nth-child(even) {
-    background: #f3f3ff;
-}
-
-.student-table tr:hover {
-    background: #ececfc;
-}
-/* ============================
-   RESPONSIVE DESIGN
-============================ */
-
-@media (max-width: 1000px) {
-    .main-grid {
-        grid-template-columns: 1fr;
+@keyframes slideIn {
+    from {
+        transform: translateX(60px);
+        opacity: 0;
     }
-
-    .calendar-grid {
-        grid-template-columns: repeat(3, 1fr);
+    to {
+        transform: translateX(0px);
+        opacity: 1;
     }
 }
-
-@media (max-width: 700px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    }
-
-    .tabs {
-        flex-wrap: wrap;
-    }
-
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
-    }
-
-    .header-actions {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .center-box {
-        margin: 40px 20px;
-        padding: 25px;
-    }
-
-    .tab {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-
-    .stat-number {
-        font-size: 22px;
-    }
-}
-
-/* ============================
-   UTILITY CLASSES
-============================ */
-
-.mt-10 { margin-top: 10px; }
-.mt-15 { margin-top: 15px; }
-.mt-20 { margin-top: 20px; }
-.text-center { text-align: center; }
-
-/* ============================
-   DISABLED UI FOR STUDENT
-============================ */
-
-.student-hidden {
-    display: none !important;
-}
-
-.student-readonly {
-    pointer-events: none !important;
-    opacity: 0.7;
-}
-
-/* ============================
-   END OF FILE
-============================ */
