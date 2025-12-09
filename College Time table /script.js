@@ -666,7 +666,7 @@
                 t.setHours(h, m, 0);
 
                 let diff = t - now;
-                return diff > 0 && diff <= 15 * 60 * 1000;
+                return diff > 0 && diff <= 2 * 60 * 60 * 1000;
             });
 
             const alert = document.getElementById("alertBox");
